@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+
 -- === TABLAS QUE VIENEN DE ENTIDADES === 
 
 -- TABLA USUARIOS
@@ -12,9 +14,9 @@ CREATE TABLE usuarios (
 
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
--- TABLA 2FA
+-- TABLA 2FA (AUTENTICACIÓN)
 CREATE TABLE codigos_2fa (
     id_2fa INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
@@ -24,7 +26,7 @@ CREATE TABLE codigos_2fa (
 
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
     ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- TABLA DIRECCIONES
 CREATE TABLE direcciones (
@@ -41,7 +43,7 @@ CREATE TABLE direcciones (
 
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
     ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- TABLA CATEGORIAS
 CREATE TABLE categorias (
@@ -58,7 +60,7 @@ CREATE TABLE categorias (
 
     FOREIGN KEY (id_categoria_padre) REFERENCES categorias(id_categoria)
     ON DELETE SET NULL
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- TABLA PRODUCTOS (CORREGIDO: eliminado id_categoria)
 CREATE TABLE productos (
@@ -72,7 +74,7 @@ CREATE TABLE productos (
 
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- TABLA VARIANTES
 CREATE TABLE variantes (
@@ -86,7 +88,7 @@ CREATE TABLE variantes (
 
     FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
     ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- TABLA IMAGENES
 CREATE TABLE imagenes (
@@ -98,7 +100,7 @@ CREATE TABLE imagenes (
 
     FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
     ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- TABLA CARRITOS
 CREATE TABLE carritos (
@@ -112,7 +114,7 @@ CREATE TABLE carritos (
 
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
     ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- TABLA PEDIDOS
 CREATE TABLE pedidos (
@@ -138,7 +140,7 @@ CREATE TABLE pedidos (
 
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
     ON DELETE RESTRICT
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- TABLA PAGOS
 CREATE TABLE pagos (
@@ -160,7 +162,7 @@ CREATE TABLE pagos (
 
     FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
     ON DELETE RESTRICT
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- TABLA CONVERSACIONES
 CREATE TABLE conversaciones (
@@ -174,7 +176,7 @@ CREATE TABLE conversaciones (
 
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
     ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- TABLA MENSAJES
 CREATE TABLE mensajes (
@@ -193,7 +195,7 @@ CREATE TABLE mensajes (
 
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
     ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- TABLA RESENAS
 CREATE TABLE resenas (
@@ -214,7 +216,7 @@ CREATE TABLE resenas (
 
     FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- === TABLAS RELACIONALES ===
 
@@ -230,7 +232,7 @@ CREATE TABLE producto_categoria (
 
     FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- CARRITO_VARIANTES
 CREATE TABLE carrito_variantes (
@@ -246,7 +248,7 @@ CREATE TABLE carrito_variantes (
 
     FOREIGN KEY (id_variante) REFERENCES variantes(id_variante)
         ON DELETE RESTRICT
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- PEDIDO_VARIANTES (CORREGIDO: AÑADIDO HISTÓRICO)
 CREATE TABLE pedido_variantes (
@@ -266,9 +268,10 @@ CREATE TABLE pedido_variantes (
 
     FOREIGN KEY (id_variante) REFERENCES variantes(id_variante)
         ON DELETE RESTRICT
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
 -- === INDICES ===
+CREATE INDEX idx_producto_nombre ON productos(nombre);
 
 CREATE INDEX idx_producto_categoria_cat ON producto_categoria(id_categoria);
 CREATE INDEX idx_producto_categoria_prod ON producto_categoria(id_producto);
@@ -276,10 +279,15 @@ CREATE INDEX idx_producto_categoria_prod ON producto_categoria(id_producto);
 CREATE INDEX idx_variante_producto ON variantes(id_producto);
 
 CREATE INDEX idx_carrito_usuario ON carritos(id_usuario);
+CREATE INDEX idx_carrito_usuario_estado ON carritos(id_usuario, estado_carrito);
+CREATE INDEX idx_carrito_usuario_estado ON carritos(id_usuario, estado_carrito);
 
 CREATE INDEX idx_pedido_usuario ON pedidos(id_usuario);
+CREATE INDEX idx_pedido_estado ON pedidos(estado);
 
 CREATE INDEX idx_pago_pedido ON pagos(id_pedido);
 
 CREATE INDEX idx_conversacion_usuario ON conversaciones(id_usuario);
+
 CREATE INDEX idx_mensaje_conversacion ON mensajes(id_conversacion);
+CREATE INDEX idx_mensajes_conversacion_fecha ON mensajes(id_conversacion, fecha);
