@@ -1,305 +1,285 @@
--- =============================
--- CONFIGURACIÓN INICIAL
--- =============================
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
+-- === TABLAS QUE VIENEN DE ENTIDADES === 
 
--- =============================
--- TABLA: USUARIOS
--- =============================
+-- TABLA USUARIOS
 CREATE TABLE usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    apellidos VARCHAR(100),
-    email VARCHAR(150) NOT NULL UNIQUE,
-    contrasenia_hash VARCHAR(255) NOT NULL,
-    rol ENUM('admin', 'usuario') NOT NULL DEFAULT 'usuario',
-    estado ENUM('activo', 'bloqueado', 'eliminado') NOT NULL DEFAULT 'activo',
-    fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    fa_activado BOOLEAN DEFAULT FALSE,
-    deleted_at DATETIME NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    contasenia_hash VARCHAR(255) NOT NULL,
 
-    INDEX idx_usuarios_estado (estado),
-    INDEX idx_usuarios_deleted (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    rol ENUM('admin', 'cliente') DEFAULT 'cliente',
+    estado ENUM('activo', 'inactivo', 'bloqueado') DEFAULT 'activo',
 
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- TABLA 2FA
 CREATE TABLE codigos_2fa (
-    id_codigo INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    codigo VARCHAR(10) NOT NULL,
-    expiracion DATETIME NOT NULL,
-    usado BOOLEAN NOT NULL DEFAULT FALSE,
+    id_2fa INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    codigo VARCHAR(10),
+    expiracion DATETIME,
+    verificado BOOLEAN DEFAULT FALSE,
 
-    INDEX idx_2fa_usuario (usuario_id),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+    ON DELETE CASCADE
+);
 
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id_usuario)
-        ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =============================
--- TABLA: DIRECCIONES
--- =============================
+-- TABLA DIRECCIONES
 CREATE TABLE direcciones (
     id_direccion INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
-    direccion VARCHAR(200) NOT NULL,
+
+    calle VARCHAR(255) NOT NULL,
     ciudad VARCHAR(100) NOT NULL,
-    cp VARCHAR(10) NOT NULL,
-    pais VARCHAR(100) NOT NULL,
-    telefono VARCHAR(20) NOT NULL,
-    deleted_at DATETIME NULL,
+    provincia VARCHAR(100),
+    codigo_postal VARCHAR(10),
+    pais VARCHAR(100) DEFAULT 'España',
 
-    es_principal BOOLEAN NOT NULL DEFAULT FALSE,
+    es_principal BOOLEAN DEFAULT FALSE,
 
-    INDEX idx_direcciones_usuario (id_usuario),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
-        ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ON DELETE CASCADE
+);
 
--- =============================
--- TABLA: CATEGORIAS
--- =============================
+-- TABLA CATEGORIAS
 CREATE TABLE categorias (
     id_categoria INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    descripcion VARCHAR(255),
+    descripcion TEXT,
+
     id_categoria_padre INT NULL,
-    deleted_at DATETIME NULL,
 
-    INDEX idx_categorias_padre (id_categoria_padre),
+    estado ENUM('activa', 'inactiva') DEFAULT 'inactiva',
+
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
     FOREIGN KEY (id_categoria_padre) REFERENCES categorias(id_categoria)
-        ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ON DELETE SET NULL
+);
 
--- =============================
--- TABLA: PRODUCTOS
--- =============================
+-- TABLA PRODUCTOS (CORREGIDO: eliminado id_categoria)
 CREATE TABLE productos (
     id_producto INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
-    precio_base DECIMAL(10,2) NOT NULL CHECK (precio_base >= 0),
     descripcion TEXT,
-    estado_producto ENUM('activo', 'inactivo', 'agotado') NOT NULL DEFAULT 'activo',
-    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at DATETIME NULL,
 
-    INDEX idx_productos_estado (estado_producto),
-    INDEX idx_productos_deleted (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    precio_base DECIMAL(10,2) NOT NULL CHECK (precio_base >= 0),
 
--- =============================
--- TABLA: VARIANTES
--- =============================
+    estado ENUM('activo', 'inactivo') DEFAULT 'activo',
+
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- TABLA VARIANTES
 CREATE TABLE variantes (
     id_variante INT AUTO_INCREMENT PRIMARY KEY,
     id_producto INT NOT NULL,
-    sku VARCHAR(50) NOT NULL UNIQUE,
-    precio DECIMAL(10,2) NOT NULL CHECK (precio >= 0),
-    stock INT NOT NULL DEFAULT 0 CHECK (stock >= 0),
-    deleted_at DATETIME NULL,
 
-    INDEX idx_variantes_producto (id_producto),
+    nombre VARCHAR(100),
+
+    precio DECIMAL(10,2) DEFAULT 0 CHECK (precio >= 0),
+    stock INT DEFAULT 0 CHECK (stock >= 0),
+
     FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
-        ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ON DELETE CASCADE
+);
 
--- =============================
--- TABLA: CARRITOS
--- =============================
-CREATE TABLE carritos (
-    id_carrito INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    estado_carrito ENUM('activo', 'abandonado', 'convertido') NOT NULL DEFAULT 'activo',
-    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    INDEX idx_carritos_usuario (id_usuario),
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
-        ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =============================
--- TABLA: PEDIDOS
--- =============================
-CREATE TABLE pedidos (
-    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    id_direccion INT NOT NULL,
-    estado_pedido ENUM('pendiente_pago', 'pagado', 'enviado', 'cancelado') NOT NULL DEFAULT 'pendiente_pago',
-    tipo_envio VARCHAR(50),
-    coste_envio DECIMAL(10,2),
-    total DECIMAL(10,2) NOT NULL CHECK (total >= 0),
-    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    INDEX idx_pedidos_usuario (id_usuario),
-    INDEX idx_pedidos_estado (estado_pedido),
-
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
-        ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (id_direccion) REFERENCES direcciones(id_direccion)
-        ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =============================
--- TABLA: PAGOS
--- =============================
-CREATE TABLE pagos (
-    id_pago INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido INT NOT NULL,
-    proveedor_pago VARCHAR(50) NOT NULL,
-    id_pago_externo VARCHAR(255) NULL,
-    metodo_pago ENUM('tarjeta', 'paypal', 'google_pay', 'apple_pay') NOT NULL,
-    estado_pago ENUM('pendiente', 'completado', 'fallido') NOT NULL DEFAULT 'pendiente',
-    importe DECIMAL(10,2) NOT NULL CHECK (importe >= 0),
-    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    fecha_confirmacion DATETIME NULL,
-
-    INDEX idx_pagos_pedido (id_pedido),
-    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
-        ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =============================
--- TABLA: CONVERSACIONES
--- =============================
-CREATE TABLE conversaciones (
-    id_conversacion INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    estado ENUM('abierta', 'cerrada') DEFAULT 'abierta',
-    asunto VARCHAR(150) NOT NULL,
-
-    INDEX idx_conversaciones_usuario (id_usuario),
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
-        ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =============================
--- TABLA: MENSAJES
--- =============================
-CREATE TABLE mensajes (
-    id_mensaje INT AUTO_INCREMENT PRIMARY KEY,
-    id_conversacion INT NOT NULL,
-    id_emisor INT NOT NULL,
-    tipo_emisor ENUM('usuario','admin') NOT NULL,
-    contenido TEXT NOT NULL,
-    leido BOOLEAN NOT NULL DEFAULT FALSE,
-    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    INDEX idx_mensajes_conversacion (id_conversacion, FECHA),
-    INDEX idx_mensajes_fecha (fecha),
-    INDEX idx_mensajes_emisor (id_emisor),
-
-    FOREIGN KEY (id_conversacion) REFERENCES conversaciones(id_conversacion)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_emisor) REFERENCES usuarios(id_usuario)
-        ON DELETE RESTRICT ON UPDATE CASCADE
-
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =============================
--- TABLA: INTERACCIONES
--- =============================
-CREATE TABLE interacciones (
-    id_interaccion INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    id_producto INT NOT NULL,
-    tipo_interaccion ENUM('vista', 'carrito', 'compra') NOT NULL,
-    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    INDEX idx_interacciones_usuario (id_usuario),
-    INDEX idx_interacciones_producto (id_producto),
-    INDEX idx_interacciones_user_producto (id_usuario, id_producto),
-    INDEX idx_tipo (tipo_interaccion),
-
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
-        ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
-        ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =============================
--- TABLA: IMAGENES
--- =============================
+-- TABLA IMAGENES
 CREATE TABLE imagenes (
     id_imagen INT AUTO_INCREMENT PRIMARY KEY,
     id_producto INT NOT NULL,
-    url_imagen VARCHAR(255) NOT NULL,
-    orden INT NOT NULL DEFAULT 1,
 
-    INDEX idx_imagenes_producto (id_producto),
+    url VARCHAR(255) NOT NULL,
+    es_principal BOOLEAN DEFAULT FALSE,
+
     FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
-        ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ON DELETE CASCADE
+);
 
--- =============================
--- TABLA: RESENAS
--- =============================
-CREATE TABLE resenas (
-    id_resena INT AUTO_INCREMENT PRIMARY KEY,
+-- TABLA CARRITOS
+CREATE TABLE carritos (
+    id_carrito INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
-    id_producto INT NOT NULL,
-    puntuacion TINYINT NOT NULL CHECK (puntuacion BETWEEN 1 AND 5),
-    comentario TEXT,
-    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    INDEX idx_resenas_producto (id_producto),
-    INDEX idx_resenas_usuario (id_usuario),
+    estado_carrito ENUM('activo', 'abandonado', 'convertido') DEFAULT 'activo',
+
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
-        ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
-        ON DELETE CASCADE ON UPDATE CASCADE,
+    ON DELETE CASCADE
+);
 
-    UNIQUE (id_usuario, id_producto)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- TABLA PEDIDOS
+CREATE TABLE pedidos (
+    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
 
--- =============================
--- TABLAS INTERMEDIAS
--- =============================
-CREATE TABLE producto_categoria (
-    id_producto INT NOT NULL,
-    id_categoria INT NOT NULL,
+    estado ENUM('pendiente', 'pagado', 'enviado', 'entregado', 'cancelado') DEFAULT 'pendiente',
 
-    PRIMARY KEY (id_producto, id_categoria),
-    INDEX idx_pc_categoria (id_categoria),
+    tipo_envio VARCHAR(50),
+    coste_envio DECIMAL(10,2) DEFAULT 0,
 
-    FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria)
-        ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    total DECIMAL(10,2) NOT NULL CHECK (total >= 0),
 
-CREATE TABLE carrito_variantes (
-    id_carrito INT NOT NULL,
-    id_variante INT NOT NULL,
-    cantidad INT NOT NULL CHECK (cantidad > 0),
+    -- HISTÓRICO DIRECCIÓN
+    calle VARCHAR(255),
+    ciudad VARCHAR(100),
+    provincia VARCHAR(100),
+    codigo_postal VARCHAR(10),
+    pais VARCHAR(100),
 
-    PRIMARY KEY (id_carrito, id_variante),
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    INDEX idx_cv_variante (id_variante),
-    INDEX idx_cv_carrito (id_carrito),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+    ON DELETE RESTRICT
+);
 
-    FOREIGN KEY (id_carrito) REFERENCES carritos(id_carrito)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_variante) REFERENCES variantes(id_variante)
-        ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE pedido_variantes (
+-- TABLA PAGOS
+CREATE TABLE pagos (
+    id_pago INT AUTO_INCREMENT PRIMARY KEY,
     id_pedido INT NOT NULL,
-    id_variante INT NOT NULL,
-    cantidad INT NOT NULL CHECK (cantidad > 0),
-    precio_unitario DECIMAL(10,2) NOT NULL CHECK (precio_unitario >= 0),
 
-    PRIMARY KEY (id_pedido, id_variante),
+    proveedor_pago VARCHAR(50),
+    id_pago_externo VARCHAR(255),
 
-    INDEX idx_pv_variante (id_variante),
-    INDEX idx_pv_pedido (id_pedido),
+    metodo_pago ENUM('tarjeta', 'paypal', 'google_pay', 'apple_pay') NOT NULL,
+
+    estado_pago ENUM('pendiente', 'completado', 'fallido') DEFAULT 'pendiente',
+
+    importe DECIMAL(10,2) NOT NULL CHECK (importe >= 0),
+    moneda VARCHAR(10) DEFAULT 'EUR',
+
+    fecha_confirmacion DATETIME NULL,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
-        ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (id_variante) REFERENCES variantes(id_variante)
-        ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ON DELETE RESTRICT
+);
 
-SET FOREIGN_KEY_CHECKS = 1;
+-- TABLA CONVERSACIONES
+CREATE TABLE conversaciones (
+    id_conversacion INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+
+    asunto VARCHAR(255),
+    estado ENUM('abierto', 'cerrado') DEFAULT 'abierto',
+
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+    ON DELETE CASCADE
+);
+
+-- TABLA MENSAJES
+CREATE TABLE mensajes (
+    id_mensaje INT AUTO_INCREMENT PRIMARY KEY,
+
+    id_conversacion INT NOT NULL,
+    id_usuario INT NOT NULL,
+
+    mensaje TEXT NOT NULL,
+    leido BOOLEAN DEFAULT FALSE,
+
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (id_conversacion) REFERENCES conversaciones(id_conversacion)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+    ON DELETE CASCADE
+);
+
+-- TABLA RESENAS
+CREATE TABLE resenas (
+    id_resena INT AUTO_INCREMENT PRIMARY KEY,
+
+    id_usuario INT NOT NULL,
+    id_producto INT NOT NULL,
+
+    puntuacion INT CHECK (puntuacion BETWEEN 1 AND 5),
+    comentario TEXT,
+
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE (id_usuario, id_producto),
+
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+        ON DELETE CASCADE
+);
+
+-- === TABLAS RELACIONALES ===
+
+-- PRODUCTO_CATEGORIA
+CREATE TABLE producto_categoria (
+    id_producto INT,
+    id_categoria INT,
+
+    PRIMARY KEY (id_producto, id_categoria),
+
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria)
+        ON DELETE CASCADE
+);
+
+-- CARRITO_VARIANTES
+CREATE TABLE carrito_variantes (
+    id_item INT AUTO_INCREMENT PRIMARY KEY,
+
+    id_carrito INT NOT NULL,
+    id_variante INT NOT NULL,
+
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+
+    FOREIGN KEY (id_carrito) REFERENCES carritos(id_carrito)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (id_variante) REFERENCES variantes(id_variante)
+        ON DELETE RESTRICT
+);
+
+-- PEDIDO_VARIANTES (CORREGIDO: AÑADIDO HISTÓRICO)
+CREATE TABLE pedido_variantes (
+    id_item INT AUTO_INCREMENT PRIMARY KEY,
+
+    id_pedido INT NOT NULL,
+    id_variante INT NOT NULL,
+
+    nombre_producto VARCHAR(150),
+
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    precio_unitario DECIMAL(10,2) NOT NULL CHECK (precio_unitario >= 0),
+    subtotal DECIMAL(10,2) NOT NULL,
+
+    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (id_variante) REFERENCES variantes(id_variante)
+        ON DELETE RESTRICT
+);
+
+-- === INDICES ===
+
+CREATE INDEX idx_producto_categoria_cat ON producto_categoria(id_categoria);
+CREATE INDEX idx_producto_categoria_prod ON producto_categoria(id_producto);
+
+CREATE INDEX idx_variante_producto ON variantes(id_producto);
+
+CREATE INDEX idx_carrito_usuario ON carritos(id_usuario);
+
+CREATE INDEX idx_pedido_usuario ON pedidos(id_usuario);
+
+CREATE INDEX idx_pago_pedido ON pagos(id_pedido);
+
+CREATE INDEX idx_conversacion_usuario ON conversaciones(id_usuario);
+CREATE INDEX idx_mensaje_conversacion ON mensajes(id_conversacion);
