@@ -1,0 +1,72 @@
+<?php
+
+// =============================================================
+// CONFIGURACIÓN CENTRAL — PRIMELUX SMARTSHOP
+// =============================================================
+// Este archivo es una PLANTILLA sin credenciales reales.
+//
+// INSTRUCCIONES:
+//   1. Copia este archivo como config/config.php
+//   2. Rellena todos los valores marcados con ← COMPLETAR
+//   3. Nunca subas config.php al repositorio
+// =============================================================
+
+// --- Entorno --------------------------------------------------
+// Valores: 'development' | 'production'
+define('APP_ENV',  'production');                        // ← COMPLETAR según entorno
+define('APP_NAME', 'PrimeLux SmartShop');
+define('APP_URL',  'https://tudominio.es');       // ← COMPLETAR con tu dominio
+
+// --- Rutas internas -------------------------------------------
+define('ROOT_PATH', dirname(__DIR__));
+define('APP_PATH',  ROOT_PATH . '/app');
+define('VIEW_PATH', APP_PATH  . '/Views/');
+
+// --- Base de datos --------------------------------------------
+define('DB_HOST',    'tu-host-de-base-de-datos');        // ← COMPLETAR
+define('DB_PORT',    '3306');
+define('DB_NAME',    'nombre_base_de_datos');            // ← COMPLETAR
+define('DB_USER',    'usuario_base_de_datos');           // ← COMPLETAR
+define('DB_PASS',    '');                                // ← COMPLETAR
+define('DB_CHARSET', 'utf8mb4');
+
+// --- Sesión ---------------------------------------------------
+define('SESSION_NAME',     'primelux_session');
+define('SESSION_LIFETIME', 3600);
+
+// --- Seguridad ------------------------------------------------
+define('CSRF_TOKEN_NAME',       'csrf_token');
+define('TWO_FA_EXPIRY_MINUTES', 10);
+define('TWO_FA_MAX_ATTEMPTS',    5);
+
+// --- Email ----------------------------------------------------
+// Se usa en Fase 2 para envío del código 2FA
+define('MAIL_HOST',       'smtp.tuproveedor.es');        // ← COMPLETAR
+define('MAIL_PORT',       587);
+define('MAIL_USERNAME',   'no-reply@tudominio.es');      // ← COMPLETAR
+define('MAIL_PASSWORD',   '');                           // ← COMPLETAR
+define('MAIL_FROM_NAME',  APP_NAME);
+define('MAIL_ENCRYPTION', 'tls');
+
+// --- Stripe ---------------------------------------------------
+// Usar claves test (pk_test_ / sk_test_) en desarrollo
+// Usar claves live (pk_live_ / sk_live_) en producción
+define('STRIPE_PUBLIC_KEY', 'your_stripe_public_key'); // ← COMPLETAR
+define('STRIPE_SECRET_KEY', 'your_stripe_secret_key'); // ← COMPLETAR
+
+// --- Sobrescritura local --------------------------------------
+// Si existe config.local.php, carga credenciales locales.
+// Este archivo NO debe existir en el servidor de producción.
+$localConfig = __DIR__ . '/config.local.php';
+if (file_exists($localConfig)) {
+    require_once $localConfig;
+}
+
+// --- Modo debug -----------------------------------------------
+if (defined('APP_ENV') && APP_ENV === 'development') {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+} else {
+    ini_set('display_errors', 0);
+    error_reporting(0);
+}
