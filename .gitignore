@@ -1,0 +1,60 @@
+# =============================================================
+# .gitignore — PRIMELUX SMARTSHOP
+# =============================================================
+
+# --- Credenciales y configuración sensible -------------------
+config/config.php
+config/config.local.php
+config/config.production.php
+.env
+.env.local
+.env.production
+.env.staging
+
+# --- Scripts de prueba y diagnóstico -------------------------
+test_connection.php
+test_*.php
+
+# --- Dependencias (Composer, uso futuro) ---------------------
+vendor/
+composer.lock
+
+# --- Logs ----------------------------------------------------
+*.log
+/logs/
+/log/
+
+# --- Caché y temporales --------------------------------------
+/cache/
+/tmp/
+*.cache
+*.tmp
+
+# --- Uploads de usuarios -------------------------------------
+public/uploads/
+public/assets/img/uploads/
+
+# --- Sistema operativo ---------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# --- IDEs y editores -----------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+nbproject/
+.netbeans/
+
+# --- PHP -----------------------------------------------------
+*.php.bak
+*.php.orig
