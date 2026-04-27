@@ -1,19 +1,17 @@
-/* =============================================================
-   PRIMELUX SMARTSHOP — Variables y estilos base
-   Fuente: Sora (Google Fonts)
-   Fase 0: solo variables globales y estructura base.
-   Los estilos de componentes se añaden en cada fase.
-   ============================================================= */
+/* ============================================================
+   PRIMELUX SMARTSHOP — Sistema de diseño
+   Fase 1
+   ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap');
 
-/* ─── Variables globales ─────────────────────────────────── */
+/* ============================================================
+   VARIABLES
+   ============================================================ */
 :root {
-    --color-primary:        #2563EB;
-    --color-primary-hover:  #1D4ED8;
-    --color-primary-active: #1E40AF;
-    --color-accent:         #F59E0B;
-    --color-accent-hover:   #D97706;
+    --color-primary:       #2563EB;
+    --color-primary-hover: #1D4ED8;
+    --color-accent:        #F59E0B;
 
     --bg-main:      #0F172A;
     --bg-secondary: #111827;
@@ -31,16 +29,26 @@
     --color-error:   #EF4444;
     --color-warning: #F59E0B;
     --color-info:    #3B82F6;
+    --color-danger:  #EF4444;
+
+    --link-color: #60A5FA;
 
     --font-family:    'Sora', sans-serif;
     --font-size-body: 15px;
+
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 12px;
 }
 
-/* ─── Reset base ─────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ============================================================
+   RESET
+   ============================================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 body {
     font-family: var(--font-family);
@@ -53,25 +61,477 @@ body {
     flex-direction: column;
 }
 
-a { color: var(--color-primary); text-decoration: none; }
-img { max-width: 100%; height: auto; display: block; }
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
 
-/* ─── Estructura base ────────────────────────────────────── */
-.main-content { flex: 1; }
-.auth-body    { background-color: var(--bg-main); min-height: 100vh; }
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
 
-/* Header provisional */
-.site-header { background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: .75rem 0; }
-.site-header-inner { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
-.header-logo-img { height: 48px; width: auto; }
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.main-content {
+    flex: 1;
+}
 
-/* Footer provisional */
-.site-footer { background-color: var(--bg-secondary); border-top: 1px solid var(--border-color); margin-top: auto; }
-.footer-bottom { max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; font-size: .8rem; color: var(--text-muted); text-align: center; }
+/* ============================================================
+   HEADER
+   ============================================================ */
+.site-header {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.875rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
 
-/* Admin layout base */
-.admin-layout { display: flex; min-height: 100vh; }
-.admin-sidebar { width: 220px; background-color: var(--bg-secondary); border-right: 1px solid var(--border-color); flex-shrink: 0; }
-.admin-sidebar-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); }
-.admin-sidebar-header img { height: 32px; width: auto; }
-.admin-content { flex: 1; background-color: var(--bg-main); padding: 2rem; }
+.site-header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-logo-link {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Logo ajustado según referencia Principal.png */
+.header-logo-img {
+    height: 64px;
+    width: auto;
+}
+
+.header-user-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.header-user-greeting {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-right: 0.5rem;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.site-footer {
+    background-color: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+}
+
+.footer-bottom {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* ============================================================
+   HOME HERO
+   ============================================================ */
+.home-hero {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1.5rem;
+}
+
+.home-hero-inner {
+    text-align: center;
+    max-width: 520px;
+}
+
+/* Logo secundario en hero: tamaño contenido como en la referencia */
+.home-hero-logo {
+    height: 88px;
+    width: auto;
+    margin: 0 auto 2rem;
+}
+
+.home-hero-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+/* "PrimeLux SmartShop" en naranja, como en la referencia */
+.home-hero-title span {
+    color: var(--color-accent);
+}
+
+.home-hero-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.home-hero-welcome {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-top: 1.5rem;
+}
+
+.home-hero-welcome strong {
+    color: var(--text-primary);
+}
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.25rem;
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+/* Acción destructiva — cerrar sesión */
+.btn-danger {
+    background-color: rgba(239, 68, 68, 0.12);
+    color: var(--color-danger);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+    background-color: rgba(239, 68, 68, 0.22);
+    color: var(--color-danger);
+}
+
+.btn-sm {
+    padding: 0.4rem 0.875rem;
+    font-size: 0.825rem;
+}
+
+.btn-full {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+}
+
+/* ============================================================
+   FORMULARIOS
+   ============================================================ */
+.form-group {
+    margin-bottom: 1.125rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.375rem;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.65rem 0.875rem;
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.form-control.is-invalid {
+    border-color: var(--color-error);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+/* ============================================================
+   TOGGLE DE CONTRASEÑA
+   El icono se gestiona como <img> con src swap desde JS.
+   data-icon-show y data-icon-hide apuntan a rutas locales.
+   ============================================================ */
+.input-password-wrapper {
+    position: relative;
+}
+
+.input-password-wrapper .form-control {
+    padding-right: 2.75rem;
+}
+
+.input-password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
+.toggle-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    /* currentColor no aplica a <img>: usamos opacity para el estado normal */
+}
+
+.input-password-toggle:hover .toggle-icon {
+    opacity: 1;
+}
+
+/* ============================================================
+   HINTS Y ERRORES DE FORMULARIO
+   ============================================================ */
+.password-hints {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.375rem;
+}
+
+.password-hints span {
+    font-size: 0.775rem;
+    color: var(--text-muted);
+}
+
+.form-error {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--color-error);
+    margin-top: 0.3rem;
+}
+
+.form-group-link {
+    text-align: right;
+    margin-bottom: 1rem;
+    margin-top: -0.5rem;
+}
+
+.form-group-link a {
+    font-size: 0.825rem;
+    color: var(--link-color);
+}
+
+/* ============================================================
+   AUTH — LAYOUT
+   ============================================================ */
+.auth-body {
+    background-color: var(--bg-main);
+    min-height: 100vh;
+}
+
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 460px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-logo {
+    height: 56px;
+    width: auto;
+    margin: 0 auto 1.5rem;
+}
+
+.auth-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.375rem;
+}
+
+.auth-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Icono escudo en pantalla 2FA */
+.auth-2fa-icon {
+    width: 56px;
+    height: 56px;
+    background-color: rgba(37, 99, 235, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: var(--color-primary);
+}
+
+.auth-2fa-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.form-control-code {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.75rem;
+    padding: 0.75rem;
+}
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+}
+
+.alert-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10B981;
+}
+
+.alert-error {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #EF4444;
+}
+
+.alert-warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #F59E0B;
+}
+
+.alert-info {
+    background-color: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #3B82F6;
+}
+
+/* ============================================================
+   AUTH — PIE DE FORMULARIO
+   ============================================================ */
+.auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--divider-color);
+}
+
+.auth-footer p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.3rem;
+}
+
+.auth-footer a {
+    color: var(--link-color);
+    font-weight: 500;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+    .header-logo-img {
+        height: 48px;
+    }
+
+    .home-hero-title {
+        font-size: 1.75rem;
+    }
+
+    .auth-card {
+        padding: 1.75rem 1.25rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .password-hints {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .header-user-greeting {
+        display: none;
+    }
+}

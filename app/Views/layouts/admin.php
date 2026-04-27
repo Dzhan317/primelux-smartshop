@@ -12,9 +12,9 @@
     <div class="admin-layout">
         <aside class="admin-sidebar">
             <div class="admin-sidebar-header">
-                <img src="<?= APP_URL ?>/assets/img/logos/logo_principal.png" alt="<?= APP_NAME ?>">
+                <img src="<?= APP_URL ?>/assets/img/logos/logo_principal.png" alt="<?= htmlspecialchars(APP_NAME) ?>">
             </div>
-            <!-- Navegación admin: se completa en Fase 3B -->
+            <!-- Navegación: Fase 3B -->
         </aside>
         <main class="admin-content"><?= $content ?></main>
     </div>

@@ -1,10 +1,5 @@
 <?php
 
-// =============================================================
-// PUNTO DE ENTRADA ÚNICO — PRIMELUX SMARTSHOP
-// =============================================================
-
-// --- Autoload PSR-4 manual -----------------------------------
 spl_autoload_register(function (string $class): void {
     $prefix  = 'App\\';
     $baseDir = dirname(__DIR__) . '/app/';
@@ -13,10 +8,8 @@ spl_autoload_register(function (string $class): void {
     if (file_exists($file)) require $file;
 });
 
-// --- Configuración -------------------------------------------
 require_once dirname(__DIR__) . '/config/config.php';
 
-// --- Sesión segura -------------------------------------------
 session_name(SESSION_NAME);
 session_set_cookie_params([
     'lifetime' => SESSION_LIFETIME,
@@ -27,7 +20,6 @@ session_set_cookie_params([
 ]);
 session_start();
 
-// --- Router --------------------------------------------------
 $url    = $_GET['url'] ?? '';
 $router = new App\Core\Router($url);
 $router->dispatch();
