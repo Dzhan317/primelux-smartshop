@@ -2,16 +2,6 @@
 
 namespace App\Helpers;
 
-/**
- * CsrfHelper — Protección CSRF para formularios POST.
- *
- * Mecanismo de seguridad transversal presente en todos los formularios
- * del sistema, independientemente de la lógica de negocio.
- * Por eso pertenece a Fase 0 como base del sistema.
- *
- * Uso en vista:    <?= CsrfHelper::field() ?>
- * Uso en controller: CsrfHelper::verify();
- */
 class CsrfHelper
 {
     public static function generateToken(): string
@@ -28,10 +18,6 @@ class CsrfHelper
              . '" value="' . self::generateToken() . '">';
     }
 
-    /**
-     * Verifica el token. Usa hash_equals() para evitar timing attacks.
-     * Regenera el token tras cada uso válido.
-     */
     public static function verify(): void
     {
         $fromPost    = $_POST[CSRF_TOKEN_NAME]    ?? '';
@@ -39,7 +25,7 @@ class CsrfHelper
 
         if (!hash_equals($fromSession, $fromPost)) {
             http_response_code(403);
-            die('Petición no válida. Token de seguridad incorrecto.');
+            die('Petición no válida.');
         }
 
         unset($_SESSION[CSRF_TOKEN_NAME]);

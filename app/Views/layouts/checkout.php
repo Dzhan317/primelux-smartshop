@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/app.css">
 </head>
 <body style="background:var(--bg-main);min-height:100vh;">
-    <!-- Header y stepper: se implementan en Fase 6 -->
+    <!-- Header y stepper: Fase 6 -->
     <main><?= $content ?></main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?= APP_URL ?>/assets/js/app.js"></script>

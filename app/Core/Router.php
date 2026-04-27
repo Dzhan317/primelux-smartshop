@@ -2,19 +2,6 @@
 
 namespace App\Core;
 
-/**
- * Router — Parsea la URL y despacha al controlador correcto.
- *
- * Formato: /controlador/metodo/param1/param2
- *
- * Ejemplos:
- *   /                        → HomeController::index()
- *   /auth/login              → AuthController::login()
- *   /productos/camiseta-azul → ProductController::show('camiseta-azul')
- *
- * Los slugs con guiones funcionan correctamente como parámetros.
- * Las URLs limpias las gestiona el .htaccess de /public.
- */
 class Router
 {
     private string $url;
@@ -31,7 +18,6 @@ class Router
         $controllerName  = $segments[0] ?? 'home';
         $methodName      = $segments[1] ?? 'index';
         $params          = array_slice($segments, 2);
-
         $controllerClass = 'App\\Controllers\\' . ucfirst($controllerName) . 'Controller';
 
         if (!class_exists($controllerClass)) {
